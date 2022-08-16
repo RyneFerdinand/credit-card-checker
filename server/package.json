@@ -1,0 +1,19 @@
+{
+  "name": "cc-checker-api",
+  "version": "1.0.0",
+  "description": "A Simple API used to check the validaity of a credit card number",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon index.js"
+  },
+  "author": "Ryne",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.19"
+  }
+}
