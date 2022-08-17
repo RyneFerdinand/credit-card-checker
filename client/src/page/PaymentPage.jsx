@@ -79,13 +79,13 @@ const PaymentPage = () => {
 
       console.log(data);
       if (data.success) {
-        console.log('sukses kawand');
         setStatus('Success');
       } else {
-        console.log('ga sukses kawand');
         setStatus(data.error);
       }
-    } catch (error) {}
+    } catch (error) {
+      setStatus('Something went wrong with the server');
+    }
   };
 
   return (

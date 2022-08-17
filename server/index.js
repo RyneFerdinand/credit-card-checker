@@ -35,38 +35,50 @@ app.post('/payment', (req, res) => {
   // declare an error variable
   let error = '';
 
-  // get length
-  const panLength = PAN.length;
-
   // split the expire date to get the month and the year
-  const splitExp = expireDate.split('/');
 
-  // make month and year as integer for future comparison
-  const expMonth = parseInt(splitExp[0]);
-  // make year to 20xx format
-  const expYear = parseInt('20' + splitExp[1]);
+  if (!expDate.includes('/') || expDate.length != 5) {
+    error = 'Invalid Expire Date';
+  } else {
+    const splitExp = expireDate.split('/');
 
-  // get current date
-  const currDate = new Date();
-  // get current month and year
-  const currMonth = currDate.getMonth() + 1;
-  const currYear = currDate.getFullYear();
+    // get current date
+    const currDate = new Date();
 
-  // check if the PAN is american express
-  const isAmericanExpress = PAN.startsWith('34') || PAN.startsWith('37');
+    // get current month and year
+    const currMonth = currDate.getMonth() + 1;
+    const currYear = currDate.getFullYear();
 
-  // if the date is not after the current date
-  if (expYear < currYear || (expYear == currYear && expMonth <= currMonth)) {
-    error = 'Credit Card is Expired';
-    // if the CVV length is valid
-  } else if (!(CVV.length == 4 && isAmericanExpress) && CVV.length != 3) {
-    error = 'Invalid CVV';
-    // if the PAN length is valid
-  } else if (panLength < 16 || panLength > 19) {
-    error = 'PAN Length Must be between 16 and 19';
-    // if it's not valid in the case of luhn's algorithm
-  } else if (!luhnAlgorithm(PAN)) {
-    error = 'Error Luhn !';
+    // get the front of the year (yy)
+    const yearPrefix = currYear.toString().substring(0, 2);
+
+    // make month and year as integer for future comparison
+    const expMonth = parseInt(splitExp[0]);
+    // make year to yyxx format
+    const expYear = parseInt(yearPrefix + splitExp[1]);
+
+    // check if the PAN is american express
+    const isAmericanExpress = PAN.startsWith('34') || PAN.startsWith('37');
+
+    // get PAN length
+    const panLength = PAN.length;
+
+    // if the date is not after the current date
+    if (expYear < currYear || (expYear == currYear && expMonth <= currMonth)) {
+      error = 'Credit Card is Expired';
+      // if the CVV length is valid
+    } else if (
+      !(CVV.length == 4 && isAmericanExpress) &&
+      !(CVV.length == 3 && !isAmericanExpress)
+    ) {
+      error = 'Invalid CVV';
+      // if the PAN length is valid
+    } else if (panLength < 16 || panLength > 19) {
+      error = 'PAN Length Must be between 16 and 19';
+      // if it's not valid in the case of luhn's algorithm
+    } else if (!luhnAlgorithm(PAN)) {
+      error = 'Invalid PAN Number';
+    }
   }
 
   // if the error is not set, then there's no error
